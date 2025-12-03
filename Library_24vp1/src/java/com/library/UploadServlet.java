@@ -1,9 +1,9 @@
 package com.library;
 
 import java.io.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.annotation.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
+import jakarta.servlet.annotation.*;
 
 @WebServlet("/upload")
 @MultipartConfig(
@@ -55,9 +55,9 @@ public class UploadServlet extends HttpServlet {
                 }
                 
                 // Обновляем аватар в базе данных
-                UserDAO userDAO = new UserDAO(getServletContext());
+                UserDAO userDAO = new UserDAO(getServletContext()); // Контекст передаем при создании
                 userDAO.updateAvatar(user.getUsername(), "avatars/" + newFileName);
-                userDAO.saveUsers(getServletContext());
+                userDAO.saveUsers(); // БЕЗ параметра!
                 
                 // Обновляем пользователя в сессии
                 user.setAvatar("avatars/" + newFileName);
@@ -75,11 +75,10 @@ public class UploadServlet extends HttpServlet {
     }
     
     private String getFileName(Part part) {
-        String contentDisp = part.getHeader("content-disposition");
-        String[] tokens = contentDisp.split(";");
-        for (String token : tokens) {
-            if (token.trim().startsWith("filename")) {
-                return token.substring(token.indexOf("=") + 2, token.length() - 1);
+        for (String content : part.getHeader("content-disposition").split(";")) {
+            if (content.trim().startsWith("filename")) {
+                String fileName = content.substring(content.indexOf('=') + 1).trim().replace("\"", "");
+                return fileName.substring(fileName.lastIndexOf('/') + 1).substring(fileName.lastIndexOf('\\') + 1);
             }
         }
         return null;
