@@ -1,7 +1,7 @@
 package com.library;
 
 import java.io.*;
-import javax.servlet.*;
+import jakarta.servlet.*;
 
 public class VisitCounter {
     private static final String COUNTER_FILE = "visit_count.txt";
