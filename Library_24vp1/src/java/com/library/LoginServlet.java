@@ -1,9 +1,9 @@
 package com.library;
 
 import java.io.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.annotation.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
+import jakarta.servlet.annotation.*;
 //сервлет, обрабатывающий вход, регистрацию и выход пользователей
 @WebServlet("/login") //относительный путь
 public class LoginServlet extends HttpServlet {
@@ -31,7 +31,7 @@ public class LoginServlet extends HttpServlet {
 
                 User newUser = new User(username, password, email, fullName, role);
                 if (userDAO.addUser(newUser)) {
-                    userDAO.saveUsers(getServletContext()); //сохраняем в файл
+                    userDAO.saveUsers(); //сохраняем в файл
 
                     HttpSession session = request.getSession(); //создаем сессию
                     session.setAttribute("user", newUser); //сохраняем в ней пользователя
