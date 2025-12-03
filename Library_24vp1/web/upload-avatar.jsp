@@ -1,10 +1,13 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
-    Object userObj = session.getAttribute("user"); //проверяется наличие объекта пользователя в сессии
+    Object userObj = session.getAttribute("user");
     if (userObj == null) {
-        response.sendRedirect("index.jsp"); //если нет, то перенаправляет на главную страницу
+        response.sendRedirect("index.jsp");
         return;
     }
+    
+    String error = request.getParameter("error");
+    String success = request.getParameter("success");
 %>
 <!DOCTYPE html>
 <html>
@@ -40,6 +43,20 @@
             text-align: center;
             margin: 20px 0;
         }
+        .error {
+            color: red;
+            background: #ffe6e6;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success {
+            color: green;
+            background: #e6ffe6;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
@@ -49,17 +66,34 @@
     
     <div class="upload-box">
         <h2>Загрузка фотографии</h2>
+        
+        <%-- Показываем текущий аватар --%>
+        <div style="margin-bottom: 20px;">
+            <img src="images/${user.avatar != null ? user.avatar : 'default-avatar.png'}" 
+                 alt="Текущий аватар" style="width: 100px; height: 100px; border-radius: 50%; border: 2px solid #4CAF50;">
+            <p>Текущее фото</p>
+        </div>
+        
+        <%-- Сообщения об ошибках --%>
+        <% if (error != null) { %>
+            <div class="error">
+                <% 
+                    if ("no_file".equals(error)) out.print("Пожалуйста, выберите файл!");
+                    else if ("upload_failed".equals(error)) out.print("Ошибка при загрузке файла!");
+                    else out.print("Произошла ошибка!");
+                %>
+            </div>
+        <% } %>
+        
+        <% if (success != null) { %>
+            <div class="success">
+                Аватар успешно обновлен!
+            </div>
+        <% } %>
+        
         <p>Выберите файл для загрузки</p>
-        <!-- action-куда отправлять файлы,upload-на url
-        method-метод для отправки файлов, post-подходит для файлов
-        enctype-определяет как кодируются данные, multipart/form-data-Разбивка на части с границами(работа с файлами)
-        -->
+        
         <form action="upload" method="post" enctype="multipart/form-data">
-            <!-- type="file" - поле выбора файла с кнопкой
-            name="avatar" - идентификатор поля на сервере
-            accept="image/*" - все типы изображений
-            required - "Пожалуйста, выберите файл"
-            -->
             <input type="file" name="avatar" accept="image/*" required>
             <br>
             <button type="submit">Загрузить фото</button>
